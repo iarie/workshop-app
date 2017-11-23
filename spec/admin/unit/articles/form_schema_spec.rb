@@ -26,7 +26,7 @@ RSpec.describe "Blog::Admin::Articles::FormSchema" do
 
     describe "status" do
       it "accepts any ArticleStatus value" do
-        expect(schema.(attributes.merge(status: "draft"))).to be_success
+        expect(schema.(attributes.merge(status: "draft", published_at: nil))).to be_success
       end
 
       it "rejects any non-status value" do
@@ -45,6 +45,12 @@ RSpec.describe "Blog::Admin::Articles::FormSchema" do
 
       it "accepts nil" do
         expect(schema.(attributes.merge(published_at: nil))).to be_success
+      end
+
+      it "rejects published_at if status is not 'published'" do
+        result = schema.(attributes.merge(status: "draft"))
+        expect(result).to be_failure
+        expect(result.messages[:published_at_then_published].length).to eq 1
       end
     end
   end
